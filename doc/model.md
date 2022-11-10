@@ -1,171 +1,135 @@
-# Gas Properties - model description
+# Propriedades dos Gases - descrição do modelo
 
-This document is a high-level description of the model used in PhET's _Gas Properties_, _Gases Intro_, and _Diffusion_
-simulations.
+Este documento é uma descrição de alto nível do modelo usado nas simulações de propriedades dos gases, gases: introdução e difusão do PhET e é uma tradução do texto disponível em https://github.com/phetsims/gas-properties/blob/master/doc/model.md#gas-properties---model-description
 
-The model consists of a particle system and a container, engaged in rigid-body collisions.  All quantities (pressure, 
-temperature, volume, speed, kinetic energy) are derived from the state of the particle system and the container, using 
-the _Ideal Gas Law_.  The model also supports holding one quantity constant while the other quantities are varied.
+O modelo consiste em um sistema de partículas e um recipiente, envolvidas em colisões de corpo rígido. Todas as grandezas (pressão, temperatura, volume, velocidade, energia cinética) são derivadas do estado do sistema de partículas e do recipiente, usando a Lei do Gás Ideal. O modelo também suporta manter uma quantidade constante enquanto as outras quantidades são variadas.
 
-This description pertains mostly to the _Ideal_, _Explore_, and _Energy_ screens. The _Diffusion_ screen has a simpler
-model that does not involve the Ideal Gas Law.
+Esta descrição se refere principalmente às telas _Ideal_, _Explorar_ e _Energia_. A simulação _Difusão_ possui um modelo mais simples que não envolve a Lei do Gás Ideal.
 
-## Units, Constants, and Symbols
 
-First, a description of the units, constants, and symbols used in this sim. Use this section as a reference.
+## Unidades, Constantes e Símbolos
 
-#### Units
+Primeiramente, é feita uma descrição das unidades, constantes e símbolos usados ​​neste simulador. Use esta seção como referência.
 
-The model does not use typical SI units. Units where chosen so that we would be working with values that have a 
-significant integer component, and not working with very small values.  Working with very small values tends to 
-result in floating-point errors. So (for example) dimensions are in picometers (pm) rather than meters (m).
+#### Unidades
 
-The units used in this sim are:
-* angle: radians
-* distance: pm
-* kinetic energy: AMU * pm<sup>2</sup> / ps<sup>2</sup>
-* location: (pm, pm)
-* mass: AMU (atomic mass unit, 1 AMU = 1.66E-27 kg)
-* pressure: kPa (and atm in view)
-* temperature: K (and °C in view)
-* time: ps
-* velocity: pm / ps
+O modelo não usa unidades típicas do SI. As unidades foram escolhidas para que estivéssemos trabalhando com valores que possuem um componente inteiro significativo, e não trabalhando com valores muito pequenos. Trabalhar com valores muito pequenos tende a resultar em erros de ponto flutuante. Assim (por exemplo) as dimensões estão em picômetros (pm) em vez de metros (m).
+
+As unidades usadas nesta sim são:
+* ângulo: radianos
+* distância: pm
+* energia cinética: u * pm<sup>2</sup> / ps<sup>2</sup>
+* local: (pm, pm)
+* massa: u (unidade de massa atômica, 1 u = 1.66E-27 kg)
+* pressão: kPa (e atm em vista)
+* temperatura: K (e °C em vista)
+* tempo: ps
+* velocidade: pm / ps
 * volume: pm<sup>3</sup>
 
-#### Constants
+#### Constantes
 
-* k = Boltzmann constant = 8.316E3 (pm<sup>2</sup> * AMU)/(ps<sup>2</sup> * K), 
-[click here](https://github.com/phetsims/gas-properties/blob/master/doc/images/boltzmann-conversion.png) 
-for conversion computation
+* k = constante de Boltzmann = 8.316E3 (pm<sup>2</sup> * u)/(ps<sup>2</sup> * K), 
+[clique aqui](https://github.com/phetsims/gas-properties/blob/master/doc/images/boltzmann-conversion.png) 
+para cálculo de conversão
 
-#### Symbols
+#### Símbolos
 
-* KE = Kinetic Energy
-* m = mass
-* N = number of gas molecules (aka particles)
-* P = pressure
-* t = time
-* T = temperature
-* v = velocity
-* |v| = velocity magnitude (aka speed)
-* V = volume of the container
+* KE = Energia Cinética
+* m = massa
+* N = número de moléculas de gás (também chamadas de partículas)
+* P = pressão
+* t = tempo
+* T = temperatura
+* v = velocidade
+* |v| = módulo da velocidade (também conhecida como velocidade)
+* V = volume do recipiente
 
-## Equations
+## Equações
 
-This section enumerates the primary equations used in the sim. Use this section as a reference.
+Esta seção enumera as equações primárias usadas no sim. Use esta seção como referência.
 
-* Ideal Gas Law: PV = NkT  
-* Pressure: P = NkT/V
-* Temperature: T = (PV)/(Nk) = (2/3)KE/k
+* Lei do Gás Idea: PV = NkT  
+* Pressão: P = NkT/V
+* Temperatura: T = (PV)/(Nk) = (2/3)KE/k
 * Volume: V = NkT/P = width * height * depth
-* Kinetic Energy: KE = (3/2)kT = (1/2)m|v|<sup>2</sup>
-* Particle Speed: |v| = sqrt( 3kT/m ) = sqrt( 2KE/m )
+* Energia Cinética: KE = (3/2)kT = (1/2)m|v|<sup>2</sup>
+* Velocidade da Partícula: |v| = sqrt( 3kT/m ) = sqrt( 2KE/m )
 
-##  Particle System
+##  Sistema de partículas
 
 Particles represent gas molecules. They are rigid bodies that have mass,
 radius, location, and velocity. Radius and mass may be modified in the
 _Diffusion_ screen, and are fixed in the other screens. Location and
 velocity are modified indirectly, as a result of heating/cooling,
 changing volume, collisions, etc.
-   
-The collection of all particles is referred to as the particle system. It has the following qualities:
-* `N` is the number of particles in the container
-* no rotational kinematics (particles do not rotate)
-* no gravity (so no acceleration)
 
-All quantities (`P`, `T`, `V`, `v`, `KE`) are derived from the state of the particle system and the container.
+As partículas representam moléculas de gás. São consideradas corpos rígidos que possuem massa, raio, localização e velocidade. Raio e massa podem ser modificados na tela _Difusão_ e são fixados nas demais telas. A localização e a velocidade são modificadas indiretamente, como resultado de aquecimento/resfriamento, mudança de volume, colisões, etc.
 
-There is a limited inventory of particles (limited `N`), as indicated by the "Number of Particles" spinners and 
-the gauge on the bicycle pump. When particles escape the container through its open lid, they are immediately 
-returned to the inventory. Since there is no gravity, particles that escape the container float upwards, and 
-are deleted from the sim when they disappear from view.
+A coleção de todas as partículas é chamada de sistema de partículas. Possui as seguintes qualidades:
 
-When a particle is added to the container:
-* Initial angle is randomly chosen from the dispersion
-range of the bicycle pump, which is `MATH.PI/2`.  
-* Initial speed is based on a desired amount of kinetic energy that will result in a desired
-temperature. By default, the current temperature of the container is used.  If the container is empty (and thus has 
-no temperarture) then `300K` is used. On the _Energy_ screen, the user may optionally set this temperature. When multiple particles are added to the container simultaneously, this temperature is treated as a mean temperature, and individual particle speeds are based on a Gaussian distribution of the mean temperature.  Temperature is used to compute kinetic energy via `KE = (3/2)Tk`, and speed is then computed via `|v| = Math.sqrt( 2KE/m )`.
+* `N` é o número de partículas no recipiente
+* sem cinemática rotacional (as partículas não giram)
+* em gravidade (portanto, sem aceleração)
 
-## Container
+Todas as quantidades (`P`, `T`, `V`, `v`, `KE`)  são derivadas do estado do sistema de partículas e do recipiente.
 
-The container is a 3-dimensional box. In the _Ideal_ and _Explore_ screen, the width (and thus volume `V`) 
-can be changed by moving the container's left wall.
+Há um estoque limitado de partículas (limitado `N`), conforme indicado pelos spinners "Número de partículas" e o medidor na bomba da bicicleta. Quando as partículas escapam do recipiente pela tampa aberta, elas são imediatamente devolvidas ao inventário. Como não há gravidade, as partículas que escapam do recipiente flutuam para cima e são excluídas do sim quando desaparecem de vista.
 
-In the _Ideal_ screen, the left wall does no work. While the container is being resized, the sim is paused. 
-After completing the resize, particles are redistributed in the new volume.
+Quando uma partícula é adicionada ao recipiente:
+* O ângulo inicial é escolhido aleatoriamente a partir da faixa de dispersão da bomba de bicicleta, que é `MATH.PI/2`.  
+* IA velocidade inicial é baseada em uma quantidade desejada de energia cinética que resultará em uma temperatura desejada. Por padrão, a temperatura atual do contêiner é usada. Se o recipiente estiver vazio (e, portanto, não tiver temperatura), será usado  `300K` . Na tela _Energia_, o usuário pode, opcionalmente, definir essa temperatura. Quando várias partículas são adicionadas ao recipiente simultaneamente, essa temperatura é tratada como uma temperatura média e as velocidades das partículas individuais são baseadas em uma distribuição gaussiana da temperatura média. A temperatura é usada para calcular a energia cinética via `KE = (3/2)Tk`, e a velocidade é então calculada via `|v| = Math.sqrt( 2KE/m )`.
 
-In the _Explore_ screen, the left wall does work on particles. It changes the kinetic energy of particles
-by changing their speed. After a collision with the left wall occurs, the new x-component of a particle's 
-velocity is `-( particleVelocity.x - leftWallVelocity.x )`.
+## Recipiente
 
-When resizing the container in the _Explore_ screen, there is a speed limit on the wall when making
-the container smaller.  This speed limit prevents pressure from changing too dramatically, 
-which would make it too easy to blow the lid off of the container.
+O recipiente é uma caixa tridimensional. Na tela _Ideal_ e _Explorar_, a largura (e, portanto, o volume `V`) pode ser alterada movendo a parede esquerda do recipiente.
 
-## Collision Detection and Response
+Na tela _Ideal_, a parede esquerda não funciona. Enquanto o recipiente está sendo redimensionado, o sim é pausado. Após completar o redimensionamento, as partículas são redistribuídas no novo volume.
 
-This sim uses a rigid-body, perfectly-elastic (no net loss of kinetic
-energy) collision model. _Collision detection_ identifies when two
-objects in motion intersect. When a collision has been detected between
-two objects, _collision response_ determines what affect that collision
-has on their motion.
+Na tela _Explorar_, a parede esquerda não funciona em partículas. Ele altera a energia cinética das partículas, alterando sua velocidade. Após ocorrer uma colisão com a parede esquerda, o novo componente x da velocidade de uma partícula é `-( particleVelocity.x - leftWallVelocity.x )`.
 
-Collision detection occurs only within the container. There is no collision detection performed for particles
-that have escaped the container through the open lid. Collision detection is a posteriori (detected after a
-collision occurs).
+Ao redimensionar o recipiente na tela _Explorar_, há um limite de velocidade na parede ao diminuí-lo. Esse limite de velocidade evita que a pressão mude muito drasticamente, o que tornaria muito fácil explodir a tampa do recipiente. 
 
-Collision detection is optimized using a technique called [spatial partitioning](https://en.wikipedia.org/wiki/Space_partitioning). The collision detection
-space is partitioned into a 2D grid of cells that we refer to as regions. Rather than having to consider 
-collisions between every object in the system, only objects within the same region need to be considered.
-This greatly reduces the number of tests required.
 
-Two types of collisions are supported: particle-particle, and particle-container. 
-* Particle-particle collisions
-occur between 2 particles, and use an [impulse-based contact model](https://en.wikipedia.org/wiki/Collision_response#Impulse-based_contact_model). Particle-particle
-collision are based solely whether they intersect at their current locations. Is is possible (and acceptable)
-for two particles to pass through the same point on the way to those location and not collide. 
-Particle-particle may be disabled in the _Energy_ screen.  
-* Particle-container collisions occur between a particle and a wall of the container, 
-and are counted for display by the Collision Counter.  These collisions occur if a particle contacted a wall
-on its way to its current location.
+## Detecção e Resposta de Colisão
 
-The _Diffusion_ screen adds a removable vertical divider to the container.  When the divider is in place,
-collision detection treats the container as 2 separate containers, where the divider functions as 
-a container wall.
+Este simulador usa um modelo de colisão de corpo rígido perfeitamente elástico (sem perda líquida de energia cinética). A _detecção de colisão_ identifica quando dois objetos em movimento se cruzam. Quando uma colisão é detectada entre dois objetos, uma resposta de colisão determina o _efeito que a colisão_ tem em seu movimento.
 
-## Pressure
+A detecção de colisão ocorre apenas dentro do recipiente. Não há detecção de colisão realizada para partículas que escaparam do recipiente através da tampa aberta. A detecção de colisão é a posteriori (detectada após a ocorrência de uma colisão).
 
-When particles are added to an empty container, pressure remains zero until 1 particle has collided with
-the container. Then all `N` particles contribute to the pressure `P` via `P = NkT/V`.
+A detecção de colisão é otimizada usando uma técnica chamada [particionamento espacial](https://en.wikipedia.org/wiki/Space_partitioning). O espaço de detecção de colisão é particionado em uma grade 2D de células que chamamos de regiões. Em vez de ter que considerar colisões entre todos os objetos no sistema, apenas objetos dentro da mesma região precisam ser considerados. 
+Isso reduz muito o número de testes necessários.
 
-On each time step, pressure is computed precisely as `P = NkT/V`. The
-pressure gauge is given a bit of "noise" to make it look more realistic.
-The noise is a function of pressure and temperature. More noise is added
-at lower pressures, but the noise is suppressed as temperature
-decreases. Noise is disabled when pressure is being held constant. See
-[PressureGauge](https://github.com/phetsims/gas-properties/blob/master/js/common/model/PressureGauge.js)
-if you'd like more specifics. If desired, noise can be disabled via
-query parameter `pressureNoise=false`.
+Dois tipos de colisões são suportados: partícula-partícula e partícula-recipiente.
+ 
 
-## Hold Constant
+* As colisões partícula-partícula ocorrem entre duas partículas e usam um modelo de [contato baseado em impulso](https://en.wikipedia.org/wiki/Collision_response#Impulse-based_contact_model). A colisão partícula-partícula é baseada apenas em se elas se cruzam em suas localizações atuais. É possível (e aceitável) que duas partículas passem pelo mesmo ponto no caminho para esses locais e não colidam. Partícula-partícula pode ser desabilitada na tela _Energia_.  
+* As colisões partícula-recipiente ocorrem entre uma partícula e uma parede do recipiente e são contadas para exibição pelo Contador de Colisões. Essas colisões ocorrem se uma partícula entrar em contato com uma parede a caminho de sua localização atual.
 
-In the _Ideal_ screen, the user may specify which quantity in `PV = NkT` is to be held 
-constant.  The table below summarizes the behavior.  
+A tela _Difusão_ adiciona um divisor vertical removível ao recipiente. Quando o divisor está no lugar, a detecção de colisão trata o recipiente como separado em dois, onde o divisor funciona como uma parede do contêiner.
 
-| Hold Constant | change N | change T  | change V |
+
+## Pressão
+
+Quando partículas são adicionadas a um recipiente vazio, a pressão permanece zero até que uma partícula tenha colidido com o recipiente. Então todas as `N` partículas contribuem para a pressão `P` via `P = NkT/V`.
+
+Em cada passo de tempo, a pressão é calculada precisamente como `P = NkT/V`. O medidor de pressão recebe um pouco de "ruído" para torná-lo mais realista. O ruído é uma função da pressão e da temperatura. Mais ruído é adicionado a pressões mais baixas, mas o ruído é suprimido à medida que a temperatura diminui. O ruído é desativado quando a pressão é mantida constante. Consulte [PressureGauge](https://github.com/phetsims/gas-properties/blob/master/js/common/model/PressureGauge.js) se desejar mais detalhes. Se desejado, o ruído pode ser desabilitado através do parâmetro de consulta  `pressureNoise=false`.
+
+
+## Manter constante
+
+Na tela _Ideal_, o usuário pode especificar qual quantidade em `PV = NkT` deve ser mantida constante. A tabela abaixo resume o comportamento.  
+
+| Manter constante | mudar N | mudar T  | mudar V |
 | --- | --- | --- | --- |
-| Nothing | P changes | P changes | P changes |
+| Nada | P changes | P changes | P changes |
 | Volume (V) | P changes | P changes | - |
-| Temperature (T) | P changes | - | P changes |
-| Pressure ↕V | V changes | V changes | - |
-| Pressure ↕T | T changes | - | T changes |
+| Temperatura (T) | P changes | - | P changes |
+| Pressão↕V | V changes | V changes | - |
+| Pressão ↕T | T changes | - | T changes |
 
-The _Ideal_ screen has a default setting of "Nothing". The _Explore_ screen has a fixed setting of "Nothing". The _Energy_ screen has a fixed setting of "Volume".  (This feature is irrelevant in the _Diffusion_ screen.) 
+A tela _Ideal_ tem uma configuração padrão de "Nada". A tela _Explorar_ tem uma configuração fixa de "Nada". A tela _Energia_ tem uma configuração fixa de "Volume". (Esse recurso é irrelevante na tela _Difusão_.)
 
-If a change would result in a situation that is nonsensical (e.g.
-holding temperature constant with no particles) or violates the
-constraints of the simulation (e.g. requires a larger container volume
-than supported), the sim automatically switches to "Nothing" and
-notifies the user via a dialog.
+Se uma mudança resultar em uma situação sem sentido (por exemplo, manter a temperatura constante sem partículas) ou violar as restrições da simulação (por exemplo, requer um volume de contêiner maior do que o suportado), o sim alterna automaticamente para "Nada" e notifica o usuário através do diálogo.
+
+
